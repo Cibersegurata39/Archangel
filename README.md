@@ -64,6 +64,10 @@ Seguidamente, con la ayuda de la herramienta **Dirsearch**, se hace una enumerac
 
 ![Captura de pantalla 2025-04-22 172710](https://github.com/user-attachments/assets/f7530f66-7e9a-42e0-abde-57d1f5ef9e7b)
 
+El arhcivo 'robots.txt' indica a los rastreadores web de motores de búsqueda, a que páginas pueden acceder. En este caso se indica que no se peude acceder al archivo 'test.php' y está instrucción es para todos los motores de búsqueda. Si nos dirigimos a esta pagina se muestra que está en desarrollo y aparece un botón con el que interactuar.
+
+![image](https://github.com/user-attachments/assets/687d71d4-dab8-4b87-b910-480669239780)
+
 
 ### Vulnerabilidades explotadas
 
