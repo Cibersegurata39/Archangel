@@ -100,6 +100,12 @@ El código *php* devuelto confirma el filtro que se aplicaba para evitar el *pat
 
 **Flag: thm{explo1t1ng_lf1}**
 
-Para no ir enumerando archivo por archivo de manera manual como se ha hecho con ‘/etc/passwd’, *BurpSuite* tiene una opción llamada *Intruder*, por medio la cual, se puede pasar una lista (.txt) preparada con archivos de sistema interesantes y que sean comprobados automáticamente. Gracias a esto se descubre el archivo ‘/var/log/apache2/acces.log’.
+Para no ir enumerando archivo por archivo de manera manual como se ha hecho con ‘/etc/passwd’, *BurpSuite* tiene una opción llamada *Intruder*, por medio la cual, se puede pasar una lista (lfi-interesting_files-linux.txt) preparada con archivos de sistema interesantes y que sean comprobados automáticamente. Gracias a esto se descubre el archivo ‘/var/log/apache2/acces.log’, donde se almacena información sobre las peticiones entrantes.
+
+![Captura de pantalla 2025-04-24 155849](https://github.com/user-attachments/assets/df9d794f-630e-470f-9be5-cf3cd2e20442)
+
+<code>GET /test.php?view=php://input HTTP/1.1  
+Host: mafialive.thm  
+User-Agent: Mozilla/5.0 <?php system('ls -la'); ?> Gecko/20100101 Firefox/136.0</code>
 
 **Flag:**
