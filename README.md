@@ -4,6 +4,7 @@ Máquina resuelta de *TryHackMe* en la que se trabaja la enumeración y *fingerp
   <img src="https://img.shields.io/badge/-Kali-5e8ca8?style=for-the-badge&logo=kalilinux&logoColor=white" />
   <img src="https://img.shields.io/badge/-Nmap-6933FF?style=for-the-badge&logo=nmap&logoColor=white" />
   <img src="https://img.shields.io/badge/-Dirsearch-005571?style=for-the-badge&logo=dirsearch&logoColor=white" />
+  burp suite
   <img src="https://img.shields.io/badge/-php-777BB4?style=for-the-badge&logo=php&logoColor=white" />
   <img src="https://img.shields.io/badge/-Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white" />
   <img src="https://img.shields.io/badge/-python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
@@ -18,10 +19,11 @@ Explicar la realización del siguiente _Capture the flag_ perteneciente a la pla
 
 - Realizar *fingerprinting* y enumeración de puertos y enumeración web.
 - Funcionamiento *Virtual hosting*.
-- Explotación LFI (*Local File Inclusion*).
+- Explotación de vulnerabilidades LFI (*Local File Inclusion*).
 - Ejecución de RCE (*Remote Code Execution*).
-- Realización de *Path Traversal*.
-- Funcionamiento de *Burp Suite*
+- Realizar un *Path Traversal*.
+- Funcionamiento de *Burp Suite*.
+- Utilización de *wrappers* de *php*.
 - Realizar una *reverse shell*.
 - Poner en escucha los puertos de la máquina.
 - Obtener una *shell* a partir de un *script*.
@@ -76,14 +78,13 @@ Al hacer click en el botón, se muestra el mensaje ‘Control is an ilusion’. 
 
 ![image](https://github.com/user-attachments/assets/20a78635-aa86-400c-9f95-7d38e64b76a3)
 
-Jugando con este parámetro se puede aprovechar un *Local File Inclusion* (LFI) para vulnerar la máquina. Mediante un *Path traversal* se intenta llegar hasta el archivo ‘/etc/passwd’, pero para conseguirlo se debe saltar un filtro a ‘../..’ con ‘..//..’. El ataque es positivo y se descubre el usuario 1001 llamado ‘archangel’.
+Jugando con este parámetro se puede aprovechar una vulnerabilidad *Local File Inclusion* (LFI) para leer archivos locales, nos aprovechamos de la posibilidad de usar la *URL* como *input*. Mediante un *Path traversal* se intenta llegar hasta el archivo ‘/etc/passwd’, pero para conseguirlo se debe saltar un filtro a ‘../..’ con ‘..//..’. El ataque es positivo y se descubre el usuario 1001 llamado ‘archangel’.
 
 <code>GET /test.php?view=/var/www/html/development_testing//..//..//..//..//etc/passwd HTTP/1.1</code>
 
 ![image](https://github.com/user-attachments/assets/876549b7-8b52-4f79-83cf-f69b98f78a46)
 
-El siguiente paso es hacer uso de los *wrappers* de *php* que permiten XXXXXX. En este caso se hace uso del ‘*filter*’, en concreto con el convertidor en base64 y el archivo a tratar será ‘test.php’, página que muestra el botón a clicar. Con esto se pretende conseguir el código de esta web en base64, de tal manera que se muestre el código del *backend* (*php*) que se ejecuta en el lado del servidor y no sólo el código *html* que es ejecutado en el lado del cliente.
-Este código es sacado de la página [hacktricks]( https://hacktricks.boitatech.com.br/pentesting-web/file-inclusion).
+El siguiente paso es hacer uso de los *wrappers* de *php* que facilitan el uso de ciertos elementos de código originalmente escritos en un lenguaje, en este caso en el mismo *php*. Para esta coyuntura se hace uso del ‘*filter*’, en concreto se utiliza el convertidor en base64 sobre el archivo ‘test.php’ (página que muestra el botón a clicar). Con esto se pretende conseguir el código de esta web en base64, de tal manera que se muestre el código del *backend* (*php*) que se ejecuta en el lado del servidor y no sólo el código *html* que es ejecutado en el lado del cliente. Dicho también de otra manera, nos permite leer el código *php* en lugar de que el navegador simplemente lo ejecute. Este *wrapper* ha sido sacado de la página [hacktricks]( https://hacktricks.boitatech.com.br/pentesting-web/file-inclusion).
 
 <code>GET /test.php?view=php://filter/convert.base64-encode/resource=/var/www/html/development_testing/test.php HTTP/1.1</code>
 
@@ -95,10 +96,10 @@ Desde el terminal de *Linux* se decodifica el código devuelto con la siguiente 
 
 ![Captura de pantalla 2025-04-24 125131](https://github.com/user-attachments/assets/e69da747-f603-4432-8d26-6e2dd070fdf9)
 
-El código *php* devuelto confirma el filtro que se aplicaba para evitar el *path traversal* y además contiene una nueva *flag*.
+El código *php* devuelto confirma el filtro que se aplicaba para evitar el *path traversal*, junto con el control de que cualquier archivo que se pretendiera mostrar, estuviera dentro de la ruta '/var/www/html/development_testing'. Además, el código contiene un comentario con una nueva *flag*.
 
 **Flag: thm{explo1t1ng_lf1}**
 
-Para no ir mirando archivo por archivo de manera manual como se ha hecho con ‘/etc/passwd’, *BurpSuite* tiene una opción llamada *Intruder*, por medio la cual, se puede pasar una lista (.txt) preparada con archivos de sistema interesantes y que sean comprobados automáticamente. Gracias a esto se descubre el archivo ‘/var/log/apache2/acces.log’.
+Para no ir enumerando archivo por archivo de manera manual como se ha hecho con ‘/etc/passwd’, *BurpSuite* tiene una opción llamada *Intruder*, por medio la cual, se puede pasar una lista (.txt) preparada con archivos de sistema interesantes y que sean comprobados automáticamente. Gracias a esto se descubre el archivo ‘/var/log/apache2/acces.log’.
 
 **Flag:**
