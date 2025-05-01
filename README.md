@@ -1,10 +1,10 @@
 # Archangel
-Máquina resuelta de *TryHackMe* en la que se trabaja la enumeración y *fingerprinting*, *reverse shell* y la escucha de puertos, XXXXXXXX y la escalada de privilegios.
+Máquina resuelta de *TryHackMe* en la que se trabaja la enumeración y *fingerprinting*, *reverse shell* y la escucha de puertos, explotación de LFI y ejecución de RCE. Uso de *Burp Suite*, realización de *path hijacking* y la escalada de privilegios.
 <div>
   <img src="https://img.shields.io/badge/-Kali-5e8ca8?style=for-the-badge&logo=kalilinux&logoColor=white" />
   <img src="https://img.shields.io/badge/-Nmap-6933FF?style=for-the-badge&logo=nmap&logoColor=white" />
   <img src="https://img.shields.io/badge/-Dirsearch-005571?style=for-the-badge&logo=dirsearch&logoColor=white" />
-  burp suite
+  <img src="https://img.shields.io/badge/-BurpSuite-FF6633?style=for-the-badge&logo=burpsuite&logoColor=white" />
   <img src="https://img.shields.io/badge/-php-777BB4?style=for-the-badge&logo=php&logoColor=white" />
   <img src="https://img.shields.io/badge/-Bash-4EAA25?style=for-the-badge&logo=gnubash&logoColor=white" />
   <img src="https://img.shields.io/badge/-python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
@@ -28,6 +28,7 @@ Explicar la realización del siguiente _Capture the flag_ perteneciente a la pla
 - Poner en escucha los puertos de la máquina.
 - Obtener una *shell* a partir de un *script*.
 - Crear un servidor con *python3*.
+- Realizar *path hijacking*.
 - Utilizar variables de entorno.
 - Escalada de privilegios.
 
@@ -150,4 +151,24 @@ Lo siguiente es dirigirse al directorio '/home/archangel/secret', donde se encue
 
 ![Captura de pantalla 2025-04-25 142544](https://github.com/user-attachments/assets/7cd79b51-6528-4147-8cd7-06a651770c67)
 
-Volviendo al programa 'backup', se intenta leer este con <code>cat</code> pero no se recupera un textp legible. Y puesto que el comando <code>file</code> no es muy esclarecedor se intenta leer los metadatos del archivo con <code>strings</code>.
+Volviendo al programa 'backup', se intenta leer este con <code>cat</code> pero no se recupera un texto legible. Y puesto que el comando <code>file</code> no es muy esclarecedor se intenta leer los metadatos del archivo con <code>strings</code>. De entre toda la información, se encuentra una linea donde se muestra la copia de unos archivos de un directorio a otro. Puesto que se utiliza el binario <code>cp</code> en lugar de su ruta absoluta, se puede utilizr esto para realizar un **path hijacking** y cambiar la ruta para dirigirlo al archivo que queramos ejecutar.
+
+![Captura de pantalla 2025-04-25 142800](https://github.com/user-attachments/assets/0ac8abc3-e7ef-494d-b451-84add70c8226)
+
+El primer paso es crear una *script* 'cp' en la carpeta '/home/archangel/secret' y darle permisos de ejecución con <code>chmod +x cp</code>. En este forzamos una *shell* con el siguiente código.
+
+<code>#!/bin/bash</code>
+
+<code>/bin/bash</code>
+
+Siguiente paso es meter esta ruta dentro de la variable PATH, la cual es la que indica donde buscar los binarios para ejecutarlos.
+
+<code>export PATH=/home/archangel/secret:$PATH</code>
+
+Hecho esto sólo queda ejecutar el archivo 'backup' para que cuando ejecute el <code>cp</code> nos devuelva la *shell* del propietario del archivo, que no es otro que *root*.
+
+![Captura de pantalla 2025-04-25 143648](https://github.com/user-attachments/assets/7441a9cf-41f5-4e88-b19c-2837db1537f3)
+
+Al conseguirlo, se puede encontrar el archivo 'root.txt' en el directorio de *root*, con la última de las *flags*.
+
+**Flag: thm{p4th_v4r1abl3_expl0tation_f0r_v3rt1c4l_pr1v1l3g3_3sc4ll4t10n}**
