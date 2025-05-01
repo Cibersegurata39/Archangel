@@ -140,6 +140,14 @@ Este directorio mostraba un *script* llamado 'helloworld.sh' que es ejecutado ca
 
 ![Captura de pantalla 2025-04-25 142151](https://github.com/user-attachments/assets/1c513e0d-7415-4c90-9ba3-88b8c725925f)
 
-Una vez obtenida la *shell* de Archangel, se encuentra la siguiente *flag* en el archivo /home/archangel/user.txt
+Tras obtener la *shell* de Archangel, se encuentra la siguiente *flag* en el archivo '/home/archangel/user.txt'.
 
 **Flag: thm{lf1_t0_rc3_1s_tr1cky}**
+
+Lo siguiente es dirigirse al directorio '/home/archangel/secret', donde se encuentra el programa 'backup' del usuario *root* y una segunda bandera del usuario Archangel.
+
+**Flag: thm{h0r1zont4l_pr1v1l3g3_2sc4ll4t10n_us1ng_cr0n}**
+
+![Captura de pantalla 2025-04-25 142544](https://github.com/user-attachments/assets/7cd79b51-6528-4147-8cd7-06a651770c67)
+
+Volviendo al programa 'backup', se intenta leer este con <code>cat</code> pero no se recupera un textp legible. Y puesto que el comando <code>file</code> no es muy esclarecedor se intenta leer los metadatos del archivo con <code>strings</code>.
