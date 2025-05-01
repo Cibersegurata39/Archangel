@@ -13,7 +13,7 @@ Máquina resuelta de *TryHackMe* en la que se trabaja la enumeración y *fingerp
 
 ## Objetivo
 
-Explicar la realización del siguiente _Capture the flag_ perteneciente a la plataforma *TryHackMe*. Este desafío, nos situa en una tesitura donde una conocida empresa de soluciones de seguridad parece estar realizando pruebas en su equipo. Para completar este reto, se deberá trabajar con el *Virtual hosting* de un dominio e interactuar con este, mediante LFI, para acceder a la máquina y realizar una escalada de privilegios.
+Explicar la realización del siguiente _Capture the flag_ perteneciente a la plataforma *TryHackMe*. Este desafío, nos sitúa en una tesitura donde una conocida empresa de soluciones de seguridad parece estar realizando pruebas en su equipo. Para completar este reto, se deberá trabajar con el *Virtual hosting* de un dominio e interactuar con este, mediante LFI, para acceder a la máquina y realizar una escalada de privilegios.
 
 ## Que hemos aprendido?
 
@@ -28,7 +28,7 @@ Explicar la realización del siguiente _Capture the flag_ perteneciente a la pla
 - Poner en escucha los puertos de la máquina.
 - Obtener una *shell* a partir de un *script*.
 - Crear un servidor con *python3*.
-- Realizar *path hijacking*.
+- Realizar un *path hijacking*.
 - Utilizar variables de entorno.
 - Escalada de privilegios.
 
