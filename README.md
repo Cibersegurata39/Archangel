@@ -36,7 +36,7 @@ Explicar la realización del siguiente _Capture the flag_ perteneciente a la pla
 
 - *Kali Linux*.
 - Enumeración: *Nmap*, *Dirsearch*.
-- Penetración: *Burp Suite*, *Bash*, *PHP*, *Netcat*, *Python3*, . 
+- Penetración: *Burp Suite*, *Bash*, *PHP*, *Netcat*, *Python3*. 
 
 ## Steps
 
@@ -54,7 +54,7 @@ El comando devuelve 2 puertos TCPs abiertos:
 - En el puerto 22 corre la versión *Openssh 7.6p1*, en un sistema *Ubuntu*, servicio *SSH*.  
 - En el puerto 80 corre el servidor *Apache 2.4.29*, en un sistema *Ubuntu*, servicio *HTTP*.
 
-Primero nos dirigimos, desde el navegador, al puerto 80 de la IP dada, donde se puede ver la página web de la empresa de soluciones de seguridad. El reto de THM pide encontrar el nombre de *host*, el cual se puede deducir al encontrar un correo en la página web con el dominio 'mafialive.thm'. Esto nos lleva a pensar que se está utilizndo un *Virtual hosting* donde distitos dominios comparten la misma dirección IP con el objetivo de ahorrar en costes y usar los recursos de manera más efectiva.
+Primero nos dirigimos, desde el navegador, al puerto 80 de la IP dada, donde se puede ver la página web de la empresa de soluciones de seguridad. El reto de THM pide encontrar el nombre de *host*, el cual se puede deducir al encontrar un correo en la página web con el dominio 'mafialive.thm'. Esto nos lleva a pensar que se está utilizando un *Virtual hosting*, donde distintos dominios comparten la misma dirección IP con el objetivo de ahorrar en costes y usar los recursos de manera más efectiva.
 
 ![Captura de pantalla 2025-04-22 164207](https://github.com/user-attachments/assets/64c88ee4-d635-4ef7-95d7-a82ac57c0ff5)
 
