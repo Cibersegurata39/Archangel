@@ -68,18 +68,18 @@ Seguidamente, con la ayuda de la herramienta **Dirsearch**, se hace una enumerac
 
 ![Captura de pantalla 2025-04-22 172710](https://github.com/user-attachments/assets/f7530f66-7e9a-42e0-abde-57d1f5ef9e7b)
 
-El archivo 'robots.txt' indica a los rastreadores web de motores de búsqueda, a que páginas pueden acceder. En este caso se indica que no se peude acceder al archivo 'test.php' y está instrucción es para todos los motores de búsqueda. Si nos dirigimos a esta pagina se muestra que está en desarrollo y aparece un botón con el que interactuar.
+El archivo 'robots.txt' indica a los rastreadores web de motores de búsqueda, a qué páginas pueden acceder. En este caso, se indica que no se puede acceder al archivo 'test.php', esta instrucción es para todos los motores de búsqueda. Si nos dirigimos a esta página, se muestra que está en desarrollo y aparece un botón con el que interactuar.
 
 ![image](https://github.com/user-attachments/assets/687d71d4-dab8-4b87-b910-480669239780)
 
 
 ### Vulnerabilidades explotadas
 
-Al hacer click en el botón, se muestra el mensaje ‘Control is an ilusion’. Si capturamos la petición mediante **Burp Suite**, vemos como mediante el método GET se lee el archivo ‘mrrobot.php’ utilizando el parámetro *view*.
+Al hacer click en el botón, se muestra el mensaje ‘Control is an ilusion’. Si capturamos la petición mediante **Burp Suite** vemos como, mediante el método GET, se lee el archivo ‘mrrobot.php’ utilizando el parámetro *view*.
 
 ![image](https://github.com/user-attachments/assets/20a78635-aa86-400c-9f95-7d38e64b76a3)
 
-Jugando con este parámetro se puede aprovechar una vulnerabilidad *Local File Inclusion* (LFI) para leer archivos locales, nos aprovechamos de la posibilidad de usar la *URL* como *input*. Mediante un *Path traversal* se intenta llegar hasta el archivo ‘/etc/passwd’, pero para conseguirlo se debe saltar un filtro a ‘../..’ con ‘..//..’. El ataque es positivo y se descubre el usuario 1001 llamado ‘archangel’.
+Jugando con este parámetro, se puede aprovechar una vulnerabilidad *Local File Inclusion* (LFI) para leer archivos locales, nos aprovechamos de la posibilidad de usar la *URL* como *input*. Mediante un *Path traversal* se intenta llegar hasta el archivo ‘/etc/passwd’, pero para conseguirlo se debe saltar un filtro a ‘../..’ con ‘..//..’. El ataque es positivo y se descubre el usuario 1001 llamado ‘archangel’.
 
 <code>GET /test.php?view=/var/www/html/development_testing//..//..//..//..//etc/passwd HTTP/1.1</code>
 
